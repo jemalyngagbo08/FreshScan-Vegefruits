@@ -41,3 +41,8 @@ export function updateFeedback(id: string, feedback: "correct" | "incorrect") {
 export function clearHistory() {
   localStorage.removeItem(KEY);
 }
+
+export function deleteHistoryItem(id: string) {
+  const items = loadHistory().filter((item) => item.id !== id);
+  localStorage.setItem(KEY, JSON.stringify(items));
+}

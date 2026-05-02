@@ -1,11 +1,13 @@
 import { Button } from "@/components/ui/button";
-import { Trash2, Clock } from "lucide-react";
+import { Trash2, Clock, Eye } from "lucide-react";
 import type { HistoryItem } from "@/lib/history";
 import { cn } from "@/lib/utils";
 
 type Props = {
   items: HistoryItem[];
   onClear: () => void;
+  onView: (item: HistoryItem) => void;
+  onDelete: (id: string) => void;
 };
 
 export const HistoryPanel = ({ items, onClear }: Props) => {
@@ -31,6 +33,26 @@ export const HistoryPanel = ({ items, onClear }: Props) => {
           const fresh = item.result.freshness === "fresh";
           return (
             <div key={item.id} className="group relative rounded-2xl overflow-hidden border border-border shadow-soft transition-smooth hover:shadow-card">
+              <div className="absolute inset-0 z-10 flex items-start justify-end p-2 opacity-0 transition opacity-0 group-hover:opacity-100">
+                <div className="flex gap-2">
+                  <Button
+                    variant="secondary"
+                    size="icon"
+                    onClick={() => onView(item)}
+                    title="View history item"
+                  >
+                    <Eye className="size-4" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => onDelete(item.id)}
+                    title="Delete history item"
+                  >
+                    <Trash2 className="size-4" />
+                  </Button>
+                </div>
+              </div>
               <div className="aspect-square bg-muted">
                 <img src={item.thumbnail} alt={item.result.name} className="w-full h-full object-cover" />
               </div>

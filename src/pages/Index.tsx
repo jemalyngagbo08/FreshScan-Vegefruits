@@ -12,6 +12,7 @@ import {
   saveHistoryItem,
   updateFeedback,
   clearHistory,
+  deleteHistoryItem,
   type AnalysisResult,
   type HistoryItem,
 } from "@/lib/history";
@@ -112,6 +113,21 @@ const Index = () => {
     updateFeedback(activeId, kind);
     setHistory(loadHistory());
     toast.success(kind === "correct" ? "Thanks for confirming!" : "Thanks — feedback recorded.");
+  };
+
+  const onViewHistoryItem = (item: HistoryItem) => {
+    setImageDataUrl(item.thumbnail);
+    setResult(item.result);
+    setActiveId(item.id);
+  };
+
+  const onDeleteHistoryItem = (id: string) => {
+    deleteHistoryItem(id);
+    setHistory(loadHistory());
+    if (activeId === id) {
+      reset();
+    }
+    toast.success("History item deleted");
   };
 
   const onClearHistory = () => {
@@ -216,7 +232,12 @@ const Index = () => {
 
         {/* History */}
         <section className="mt-12">
-          <HistoryPanel items={history} onClear={onClearHistory} />
+          <HistoryPanel
+            items={history}
+            onClear={onClearHistory}
+            onView={onViewHistoryItem}
+            onDelete={onDeleteHistoryItem}
+          />
         </section>
 
         {/* Tips */}

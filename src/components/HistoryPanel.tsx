@@ -10,7 +10,7 @@ type Props = {
   onDelete: (id: string) => void;
 };
 
-export const HistoryPanel = ({ items, onClear }: Props) => {
+export const HistoryPanel = ({ items, onClear, onView, onDelete }: Props) => {
   if (items.length === 0) {
     return (
       <div className="text-center py-10 text-muted-foreground text-sm">

@@ -16,6 +16,13 @@ import {
   type AnalysisResult,
   type HistoryItem,
 } from "@/lib/history";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 
 const Index = () => {
   const [showCamera, setShowCamera] = useState(false);
@@ -24,6 +31,7 @@ const Index = () => {
   const [result, setResult] = useState<AnalysisResult | null>(null);
   const [activeId, setActiveId] = useState<string | null>(null);
   const [history, setHistory] = useState<HistoryItem[]>([]);
+  const [historyDetail, setHistoryDetail] = useState<HistoryItem | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -116,9 +124,7 @@ const Index = () => {
   };
 
   const onViewHistoryItem = (item: HistoryItem) => {
-    setImageDataUrl(item.thumbnail);
-    setResult(item.result);
-    setActiveId(item.id);
+    setHistoryDetail(item);
   };
 
   const onDeleteHistoryItem = (id: string) => {
@@ -126,6 +132,9 @@ const Index = () => {
     setHistory(loadHistory());
     if (activeId === id) {
       reset();
+    }
+    if (historyDetail?.id === id) {
+      setHistoryDetail(null);
     }
     toast.success("History item deleted");
   };
@@ -239,6 +248,54 @@ const Index = () => {
             onDelete={onDeleteHistoryItem}
           />
         </section>
+
+        <Dialog open={Boolean(historyDetail)} onOpenChange={(open) => !open && setHistoryDetail(null)}>
+          <DialogContent className="max-w-3xl w-full p-0 overflow-hidden">
+            {historyDetail && (
+              <div className="grid gap-0 md:grid-cols-[1.2fr_1fr]">
+                <div className="relative overflow-hidden bg-muted min-h-[320px]">
+                  <img src={historyDetail.thumbnail} alt={historyDetail.result.name} className="w-full h-full object-cover" />
+                </div>
+                <div className="p-6 sm:p-8 flex flex-col gap-4">
+                  <DialogHeader>
+                    <DialogTitle>{historyDetail.result.name || "Unknown"}</DialogTitle>
+                    <DialogDescription>
+                      Viewed on {new Date(historyDetail.timestamp).toLocaleString()}
+                    </DialogDescription>
+                  </DialogHeader>
+
+                  <div className="grid gap-3 text-sm text-muted-foreground">
+                    <div>
+                      <span className="font-semibold text-foreground">Category:</span> {historyDetail.result.category}
+                    </div>
+                    <div>
+                      <span className="font-semibold text-foreground">Freshness:</span> {historyDetail.result.freshness}
+                    </div>
+                    <div>
+                      <span className="font-semibold text-foreground">Confidence:</span> {Math.round(historyDetail.result.confidence)}%
+                    </div>
+                    <div>
+                      <span className="font-semibold text-foreground">Detected:</span> {historyDetail.result.detected ? "Yes" : "No"}
+                    </div>
+                    <div>
+                      <span className="font-semibold text-foreground">Reason:</span>
+                      <p className="mt-1 text-sm text-muted-foreground">{historyDetail.result.reason}</p>
+                    </div>
+                    <div>
+                      <span className="font-semibold text-foreground">Tip:</span>
+                      <p className="mt-1 text-sm text-muted-foreground">{historyDetail.result.tip}</p>
+                    </div>
+                    {historyDetail.feedback && (
+                      <div>
+                        <span className="font-semibold text-foreground">Feedback:</span> {historyDetail.feedback}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
+          </DialogContent>
+        </Dialog>
 
         {/* Tips */}
         <section className="mt-12 grid sm:grid-cols-3 gap-4">
